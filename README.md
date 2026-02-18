@@ -27,7 +27,7 @@ Steamのダウンロード画面ではファイルサイズは表示されます
 
 ```bash
 # リポジトリをクローン（または pz_mod_update_checker.py をダウンロード）
-git clone https://github.com/YOUR_USERNAME/pz-mod-update-checker.git
+git clone https://github.com/movinow/pz-mod-update-checker.git
 cd pz-mod-update-checker
 ```
 
