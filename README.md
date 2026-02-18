@@ -1,96 +1,21 @@
 # PZ Mod Update Checker
 
-**Project Zomboid** の Steam Workshop Mod がいつ更新されたかを素早く確認するコマンドラインツール。
+Steamでダウンロードが走った後、**どのModが更新されたか**をすぐに確認できるツールです。
 
-Steamでダウンロードが走った後、どのModが更新されたのかワークショップを開かずに確認できます。
+![Windows](https://img.shields.io/badge/Windows-10%2F11-blue) ![macOS](https://img.shields.io/badge/macOS-supported-green) ![Linux](https://img.shields.io/badge/Linux-supported-orange) ![Python](https://img.shields.io/badge/Python-3.7+-yellow)
 
-## 解決する問題
+## こんな経験ありませんか？
 
-Steamのダウンロード画面ではファイルサイズは表示されますが、**どのModが更新されたかは表示されません**。
-このツールはSteamのローカルデータを解析して、更新されたModを即座に特定します。
+> Steamを起動したら「Project Zomboid - Workshop コンテンツ」のダウンロードが始まった。
+> 終わったけど...  **一体どのModが更新されたの？？**
 
-## 必要な環境
+Steamはダウンロードサイズしか教えてくれません。どのModが更新されたか知るには、ワークショップを開いて一つ一つ確認する必要があります。
 
-- **Python 3.7以上**（標準ライブラリのみ使用、追加インストール不要）
-- **Steam** がインストールされていること
-- **Project Zomboid** のWorkshop Modをサブスクライブしていること
-
-### 対応OS
-
-| OS | 対応状況 | Steamパスの自動検出 |
-|---|---|---|
-| Windows 10/11 | ✅ | デフォルトパス + レジストリ + ライブラリフォルダ |
-| macOS | ✅ | デフォルトパス + ライブラリフォルダ |
-| Linux | ✅ | 一般的な3パス + ライブラリフォルダ |
-
-## インストール
-
-```bash
-# リポジトリをクローン（または pz_mod_update_checker.py をダウンロード）
-git clone https://github.com/movinow/pz-mod-update-checker.git
-cd pz-mod-update-checker
-```
-
-ファイルは `pz_mod_update_checker.py` の1つだけです。好きな場所に置いて実行できます。
-
-## 使い方
-
-### 基本：更新チェック
-
-```bash
-python pz_mod_update_checker.py
-```
-
-**初回実行**: 現在の全Modの状態をスナップショットとして保存し、直近30日間の更新を表示します。
-**2回目以降**: 前回のスナップショットと比較し、更新・追加・削除されたModを表示します。
-
-### 全Mod一覧
-
-```bash
-python pz_mod_update_checker.py --list
-```
-
-サブスクライブ中の全Modを更新日時の新しい順に一覧表示します。
-
-### 直近N日間の更新
-
-```bash
-python pz_mod_update_checker.py --days 7
-```
-
-直近7日間に更新されたModだけを表示します。
-
-### スナップショットのリセット
-
-```bash
-python pz_mod_update_checker.py --reset
-```
-
-スナップショットを現在の状態で上書きします。
-
-### ヘルプ
-
-```bash
-python pz_mod_update_checker.py --help
-```
+**このツールなら、ダブルクリックするだけで答えがわかります。**
 
 ## 出力例
 
-### 更新が検出された場合
-
 ```
-  +====================================================+
-  |  PZ Mod Update Checker                              |
-  |  Project Zomboid (App ID: 108600)                   |
-  +====================================================+
-  |  OS: Windows                                        |
-  +====================================================+
-
-  ACF last modified: 2026-02-18 10:26 (just now)
-  Subscribed mods:  37
-
-  Last check: 2026-02-17 22:00 (12h ago)
-
   * Updated mods (2)
   ======================================================================
     >> that DAMN Library 0.9848b
@@ -102,55 +27,150 @@ python pz_mod_update_checker.py --help
        2026-02-16 12:00 -> 2026-02-17 21:13
        Size: 3.8 MB  |  ID: 1227676938
        https://steamcommunity.com/sharedfiles/filedetails/?id=1227676938
-
-  Snapshot updated.
 ```
 
-### --days 7 の場合
+---
 
-```
-  Mods updated in the last 7 day(s) (4/37)
-  ==========================================================================
-  Updated               Ago        Size  Mod name
-  --------------------------------------------------------------------------
-  2026-02-18 03:58      6h ago     33.9 MB  that DAMN Library 0.9848b
-  2026-02-17 21:13     13h ago      3.8 MB  [Build 42] Unofficial Japanese Translation
-  2026-02-13 04:18     5d ago      16.5 MB  '89 Isuzu Trooper
-  2026-02-11 11:20     6d ago       4.1 MB  Skill Recovery Journal
-  ==========================================================================
-  Total size: 58.3 MB
-```
+## ダウンロード
 
-## 仕組み
+**[📦 最新版をダウンロード（zip）](https://github.com/movinow/pz-mod-update-checker/releases/latest)**
 
-1. Steamのローカルマニフェストファイル (`appworkshop_108600.acf`) を解析
-2. 各Modの更新タイムスタンプとMod名（`mod.info` から取得）を読み取り
-3. 前回のスナップショット（`.pz_mod_snapshot.json`）と比較して差分を表示
-4. 現在の状態をスナップショットとして保存
+1. 上のリンクから `.zip` ファイルをダウンロード
+2. 好きな場所に展開（解凍）
 
-すべてローカルファイルの解析のみで動作します。Steam APIやネットワーク通信は使用しません。
+> ⚠️ **Pythonが必要です**（まだの方は[下のガイド](#pythonのインストール)を参照）
 
-## 高度な使い方
+---
 
-### Steamが非標準の場所にインストールされている場合
+## 使い方
+
+### Windows
+
+1. 展開したフォルダ内の **`check_mod_updates.bat`** をダブルクリック
+2. 結果が表示されます
+
+### macOS
+
+1. 展開したフォルダ内の **`check_mod_updates.command`** をダブルクリック
+2. 「開発元を確認できない」と表示されたら → 右クリック → 「開く」
+3. 結果が表示されます
+
+### Linux
 
 ```bash
-python pz_mod_update_checker.py --acf "D:\SteamLibrary\steamapps\workshop\appworkshop_108600.acf"
+python3 pz_mod_update_checker.py
 ```
 
-### Modコンテンツフォルダを手動指定
+---
+
+## 何ができるの？
+
+### 🔍 基本：どのModが更新されたか確認
+
+ダブルクリックで実行するだけ。前回の実行からどのModが更新されたかを表示します。
+
+- 初回は現在の状態を記録して、直近30日間の更新を一覧表示
+- 2回目以降は前回からの変更を検出して表示
+
+### 📋 全Modを更新日時順に一覧表示
+
+コマンドラインから実行する場合：
+
+```
+python pz_mod_update_checker.py --list
+```
+
+### 📅 直近N日間の更新だけ表示
+
+```
+python pz_mod_update_checker.py --days 7
+```
+
+### 🔄 記録のリセット
+
+```
+python pz_mod_update_checker.py --reset
+```
+
+---
+
+## Pythonのインストール
+
+このツールの実行にはPython（バージョン3.7以上）が必要です。追加ライブラリは不要です。
+
+### Windows
+
+**方法1: Microsoft Store（おすすめ・簡単）**
+1. Microsoft Storeを開く
+2. 「Python」で検索
+3. 「Python 3.xx」の「入手」をクリック
+
+**方法2: 公式サイト**
+1. https://www.python.org/downloads/ にアクセス
+2. 「Download Python 3.xx」をクリック
+3. インストーラーを実行
+4. ⚠️ **「Add Python to PATH」にチェックを入れてからインストール**
+
+### macOS
+
+macOSにはPython 3がプリインストールされていることが多いです。
+もし入っていない場合は、ターミナルを開いて以下を実行：
+
+```
+xcode-select --install
+```
+
+### Linux
+
+ほとんどのディストリビューションにプリインストール済みです。
+もし入っていない場合：
 
 ```bash
-python pz_mod_update_checker.py --content "D:\SteamLibrary\steamapps\workshop\content\108600"
+# Ubuntu / Debian
+sudo apt install python3
+
+# Fedora
+sudo dnf install python3
 ```
 
-## ファイル
+---
 
-| ファイル | 説明 |
-|---------|------|
-| `pz_mod_update_checker.py` | メインスクリプト（これだけで動作） |
-| `.pz_mod_snapshot.json` | スナップショット（自動生成、`.gitignore` 推奨） |
+## よくある質問
+
+### Q: ゲームを起動する必要がありますか？
+
+**いいえ。** Steamが起動していれば、ゲームを起動せずに確認できます。
+
+### Q: 安全ですか？何かに接続しますか？
+
+**完全にオフラインで動作します。** ネットワーク通信は一切行いません。Steamがローカルに保存しているファイルを読み取るだけです。
+
+### Q: 「ACFファイルが見つかりません」と出ます
+
+- Steamが起動しているか確認してください
+- Project ZomboidのWorkshop Modを1つ以上サブスクライブしていることを確認してください
+- Steamを非標準の場所にインストールしている場合は `--acf` オプションで手動指定できます：
+  ```
+  python pz_mod_update_checker.py --acf "D:\SteamLibrary\steamapps\workshop\appworkshop_108600.acf"
+  ```
+
+### Q: Mod名が「(ID: xxxxx)」と表示されます
+
+そのModのデータが正しくダウンロードされていない可能性があります。Steamでゲームの「ローカルファイルの整合性を確認」を実行してみてください。
+
+---
+
+## 仕組み（技術的な説明）
+
+1. Steamのローカルマニフェストファイル（`appworkshop_108600.acf`）を解析
+2. 各Modの更新タイムスタンプとMod名を読み取り
+3. 前回のスナップショットと比較して差分を表示
+4. 現在の状態を次回のためにスナップショットとして保存
+
+Steam APIやネットワーク通信は使用しません。すべてローカルファイルの解析で完結します。
+
+---
 
 ## ライセンス
 
-MIT License
+MIT License - 自由に使用・改変・再配布できます。
